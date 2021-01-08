@@ -2,7 +2,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import React, { Component } from "react";
+import React, { Component, useEffect, useState } from "react";
 
 class Tab extends Component {
   constructor(props) {
@@ -102,21 +102,86 @@ class Parent extends Component {
   constructor(props) {
     super(props);
   }
-  parentEvent = () => {
-    console.log(123);
+  parentEvent = (e) => {
+    console.log(e);
   };
   render() {
     return (
       <div>
-        <div data-value="123" onClick={this.parentEvent} className="child">
-          123
-        </div>
+        <button
+          onClick={(e) => this.parentEvent("hello world")}
+          className="child"
+        >
+          提交
+        </button>
       </div>
     );
   }
 }
 
-ReactDOM.render(<Parent />, document.getElementById("root"));
+function UserGreet(props) {
+  return <h1>欢迎</h1>;
+}
+function UserLogin(props) {
+  return <h1>请先登录</h1>;
+}
+
+class Judge extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLogin: false,
+    };
+  }
+  toLogin = () => {
+    this.setState({
+      isLogin: !this.state.isLogin,
+    });
+  };
+  render() {
+    return (
+      <div>
+        <div>{this.state.isLogin ? <UserGreet /> : <UserLogin />}</div>
+        <button onClick={this.toLogin}>登录</button>
+      </div>
+    );
+  }
+}
+
+function ListItem(props) {
+  const [hitoko, changeHitoko] = useState(null);
+  console.log(1);
+  useEffect(() => {
+    fetch("https://international.v1.hitokoto.cn/")
+      .then((res) => res.json())
+      .then((data) => {
+        changeHitoko(data.hitokoto);
+      });
+  }, []);
+  return (
+    <div>
+      <div>
+        传来的数据:
+        {hitoko}
+      </div>
+    </div> 
+  );
+}
+
+class List extends Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return (
+      <div>
+        <ListItem />
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(<ListItem />, document.getElementById("root"));
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
